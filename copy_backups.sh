@@ -9,9 +9,6 @@
 # Author:
 # 2025 Jonathan Crider | https://github.com/JonathanCrider
 
-BACKUP_PATH=/usr/lib/unifi/data/backup/
-LOCAL_FOLDER_PATH=~/unifi_backups/
-
 # retrieve variables from .env
 set -o allexport
 . ./.env
@@ -28,7 +25,7 @@ hasRequirements() {
       return 1 # Return non-zero integer to indicate fail (0 is successful in bash/zsh, any other number is failure)
   fi
 
-  if [[ ! $USERNAME || ! $PASSWORD || ! $GATEWAY ]]
+  if [[ ! $USERNAME || ! $PASSWORD || ! $GATEWAY || ! $BACKUP_PATH || ! $LOCAL_FOLDER_PATH ]]
     then
       printf "\nmissing required variables, please check they are correct and try again\n"
       return 1
