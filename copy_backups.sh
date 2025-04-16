@@ -1,10 +1,6 @@
 #!/bin/bash
 
-# copy unifi dream machine pro autobackup files to local machine
-# MUST INCLUDE
-# .env file in same directory as script with USERNAME, PASSWORD, and GATEWAY for the unifi console login
-# sshpass (macOS: https://formulae.brew.sh/formula/sshpass)
-# brew install sshpass
+# Script to copy unifi dream machine pro backup files to local machine
 
 # Author:
 # 2025 Jonathan Crider | https://github.com/JonathanCrider
@@ -14,6 +10,7 @@ set -o allexport
 . ./.env
 set +o allexport
 
+# checks for listed requirements (see README)
 hasRequirements() {
   # return 0 === true
   has_sshpass=$(sshpass -V | head -1) # pipe to head, only want the first line of -V which is the version
@@ -34,11 +31,15 @@ hasRequirements() {
   echo "Requirements met, continuing...\n"
 }
 
-copyFiles() {
+main() {
   # check requirements and skip if not met
   hasRequirements || return 1
 
   echo copying backups from $BACKUP_PATH to $LOCAL_FOLDER_PATH
+
+  # original used scp, but rsync won't overwrite existing files so saves time on subsequent runs
+  # comment/uncomment if you prefer scp over rsync or don't have access to rsync
+
   # sshpass -p $PASSWORD scp -r "$USERNAME@$GATEWAY:$BACKUP_PATH" "$LOCAL_FOLDER_PATH"
   sshpass -p "$PASSWORD" rsync -avz -e "ssh -o StrictHostKeyChecking=no" "$USERNAME@$GATEWAY:$BACKUP_PATH" "$LOCAL_FOLDER_PATH"
 
@@ -46,4 +47,4 @@ copyFiles() {
   open "$LOCAL_FOLDER_PATH" &>/dev/null
 }
 
-copyFiles
+main
